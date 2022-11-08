@@ -1,0 +1,73 @@
+Dim total As Double
+total = 0
+Dim t As Integer
+t = 2
+Dim r As LongLong
+r = 2
+
+For Each ws In ThisWorkbook.Worksheets
+    ws.Range("I1") = "Ticker"
+    lastrow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+    
+    For i = 2 To lastrow
+    
+        If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+        
+            ws.Cells(t, 12).Value = total
+            total = 0
+            ws.Cells(t, 9).Value = ws.Cells(r, 1).Value
+            ws.Cells(t, 10).Value = ws.Cells(i, 6).Value - ws.Cells(r, 3).Value
+            ws.Cells(t, 11).Value = ws.Cells(t, 10).Value / ws.Cells(r, 3).Value
+            ws.Cells(t, 11).NumberFormat = "0.00%"
+            
+            r = i + 1
+            t = t + 1
+            
+        Else
+        
+            total = total + ws.Cells(i, 7).Value
+            
+        End If
+        
+        
+          
+    Next i
+    Dim m As Integer
+    For m = 2 To (t - 1)
+        If (ws.Cells(m, 10).Value >= 0) Then
+            ws.Cells(m, 10).Interior.ColorIndex = 4
+        Else
+            ws.Cells(m, 10).Interior.ColorIndex = 3
+        End If
+    Next m
+    t = 2
+    r = 2
+    
+    ws.Range("P1") = "Ticker"
+    ws.Range("Q1") = "Value"
+    ws.Range("J1") = "Yearly Change"
+    ws.Range("L1") = "Total Stock Volume"
+    ws.Range("K1") = "Percent Change"
+    ws.Range("O2") = "Greatest % insrease"
+    ws.Range("O3") = "Greatest % decrease"
+    ws.Range("O4") = "Greatest Total Volume"
+    
+    ws.Cells(2, 17).Value = WorksheetFunction.Max(ws.Range("K2:K" & lastrow))
+    ws.Cells(3, 17).Value = WorksheetFunction.Min(ws.Range("K2:K" & lastrow))
+    ws.Cells(4, 17).Value = WorksheetFunction.Max(ws.Range("L2:L" & lastrow))
+    
+    Dim j As LongLong
+    For j = 2 To lastrow
+        If ws.Cells(j, 11).Value = ws.Cells(2, 17) Then
+            ws.Cells(2, 16) = ws.Cells(j, 9)
+        ElseIf ws.Cells(j, 11).Value = ws.Cells(3, 17) Then
+            ws.Cells(3, 16) = ws.Cells(j, 9)
+        ElseIf ws.Cells(j, 12).Value = ws.Cells(4, 17) Then
+            ws.Cells(4, 16) = ws.Cells(j, 9)
+        End If
+    Next j
+    ws.Cells(2, 17).NumberFormat = "0.00%"
+    ws.Cells(3, 17).NumberFormat = "0.00%"
+   
+    
+Next ws
